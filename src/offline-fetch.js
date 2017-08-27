@@ -51,10 +51,23 @@
      */
     function offlineFetch(url, options) {
 
-        if (!url || url === '') throw new Error('Please provide a URL');
+        if (!url || url === '') return Promise.reject(new Error('Please provide a URL'));
+        if (options !== undefined && typeof options !== 'object') return Promise.reject(new Error('If defined, options must be of type object'));
+        if (!fetch) return Promise.reject(new Error('fetch not supported, are you missing the window.fetch polyfill?'));
 
-        options = options || {}; // ensure we always have an options object
-        //options.offline = options.offline || {}; // ensure we always have an offline object
+
+        if (!options || !options.offline) return fetch(url, options);
+
+        //options = options || {}; // ensure we always have an options object
+        //options.offline = options.offline || {}; // ensure we always have an options object
+
+        //if (typeof options && typeof options !== 'object') return Promise.reject(new Error('Options must be of type object'));
+
+        //if (!options || !options.offline) return fetch(url, options);
+
+
+
+        
 
         //options.offline = (options.offline === undefined || options.offline === true) ? {} : undefined;
 
@@ -138,17 +151,17 @@
 
                 return res;
             })
-                .catch(function (error) {
+            .catch(function (error) {
 
-                    // return cached response if we have it
-                    if (cachedResponse) {
-                        if (debug) log('offlineFetch[cache] (timedout): ' + url);
-                        return Promise.resolve(new Response(new Blob([cachedResponse])));
-                    }
+                // return cached response if we have it
+                if (cachedResponse) {
+                    if (debug) log('offlineFetch[cache] (timedout): ' + url);
+                    return Promise.resolve(new Response(new Blob([cachedResponse])));
+                }
 
-                    // otherwise rethrow the error as it timedout but we dont have cache
-                    throw error;
-                });
+                // otherwise rethrow the error as it timedout but we dont have cache
+                throw error;
+            });
         });
     }
 
