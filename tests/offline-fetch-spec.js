@@ -69,7 +69,7 @@ describe('window.offlineFetch', function () {
         })
     });
 
-    it ('should error if window.fetch is not supported', function(done) {
+    it ('should throw an error if window.fetch is not supported', function(done) {
 
         // save the global fetch
         var tempFetch = global.fetch;

@@ -4,10 +4,6 @@
  * https://github.com/john-doherty/offline-fetch
  * @author John Doherty <www.johndoherty.info>
  * @license MIT
- *
- * This script was heavily influenced by the following posts:
- * https://www.sitepoint.com/cache-fetched-ajax-requests/
- * https://www.html5rocks.com/en/mobile/workingoffthegrid/
  */
 (function () {
 
@@ -55,7 +51,7 @@
         if (options !== undefined && typeof options !== 'object') return Promise.reject(new Error('If defined, options must be of type object'));
         if (!fetch) return Promise.reject(new Error('fetch not supported, are you missing the window.fetch polyfill?'));
 
-
+        // offline not requested, execute a regular fetch
         if (!options || !options.offline) return fetch(url, options);
 
         //options = options || {}; // ensure we always have an options object
