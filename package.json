@@ -1,7 +1,7 @@
 {
   "name": "offline-fetch",
   "version": "1.0.0",
-  "description": "Adds offline support to window.fetch",
+  "description": "Adds offline support to window.fetch by caching requests locally",
   "main": "dev-server.js",
   "scripts": {
     "start": "node server/dev-server.js",
