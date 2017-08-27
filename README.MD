@@ -31,6 +31,8 @@ offlineFetch('http://www.orcascan.com/', options).then(function(data){
 });
 ```
 
+Supports any global `localStorage`-like API.
+
 ## License
 
 Licensed under [MIT License](LICENSE) &copy; [John Doherty](http://www.johndoherty.info)
