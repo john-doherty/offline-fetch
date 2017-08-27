@@ -2,7 +2,11 @@
 
 [![Linked In](https://img.shields.io/badge/Linked-In-blue.svg)](https://www.linkedin.com/in/john-i-doherty) [![Twitter Follow](https://img.shields.io/twitter/follow/CambridgeMVP.svg?style=social&label=Twitter&style=plastic)](https://twitter.com/CambridgeMVP)
 
-A simple wrapper around window.fetch that adds offline support via a simple `offline` property. Requests are cached either `sessionStorage`, `localStorage` or _(my favourite)_ [localForage](https://github.com/localForage/localForage):
+A simple wrapper around window.fetch that adds offline support via a simple `offline` property.
+
+Cached responses are returned from `sessionStorage`, `localStorage` or _(my favourite)_ [localForage](https://github.com/localForage/localForage) when offline mode is detected.
+
+Offline mode is detected when `navigator.onLine === true` _(if supported)_ or a request is times out.
 
 ```js
 var options = {
