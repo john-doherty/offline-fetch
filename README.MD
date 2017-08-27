@@ -31,7 +31,7 @@ offlineFetch('http://www.orcascan.com/', options).then(function(data){
 });
 ```
 
-Supports any global `localStorage`-like API including promise based [localForage](https://github.com/localForage/localForage).
+_Supports any global `localStorage`-like API including promise based [localForage](https://github.com/localForage/localForage)._
 
 ## Credit where credit is due
 
