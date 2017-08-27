@@ -2,23 +2,29 @@
 
 [![Linked In](https://img.shields.io/badge/Linked-In-blue.svg)](https://www.linkedin.com/in/john-i-doherty) [![Twitter Follow](https://img.shields.io/twitter/follow/CambridgeMVP.svg?style=social&label=Twitter&style=plastic)](https://twitter.com/CambridgeMVP)
 
-Adds offline support to window.fetch:
+A simple wrapper around window.fetch that adds offline support via a simple `offline` property. Requests are cached either `sessionStorage`, `localStorage` or _(my favourite)_ [localForage](https://github.com/localForage/localForage):
 
 ```js
 var options = {
+
+        // typical fetch property
+        method: 'GET',
+
+        // add offline property with optional config
         offline: {
-            storage: 'localStorage',
-            timeout: 30 * 1000,
-            expires: 300 * 1000,
-            logging: true,
+            storage: 'localStorage',    // use localStorage (defaults to sessionStorage)
+            timeout: 30 * 1000,         // request timeout in milliseconds, defaults to 30 seconds
+            expires: 300 * 1000,        // expires in milliseconds, defaults to -1 (pulls live and re-caches are this)
+            debug: true,                // console logs response source to help with debugging
+
+            // if provided uses cacheKeyGenerator to generate per request cache key (defaults to URL + METHOD hash)
             cacheKeyGenerator: function(url, opts, hash) {
                 return 'myapp:' + url;
             }
-        },
-        method: 'GET'
+        }
     };
 
-offlineFetch('http://date.jsontest.com/', options).then(function(data){
+offlineFetch('http://www.orcascan.com/', options).then(function(data){
     // data contains response...
 });
 ```
