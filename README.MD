@@ -4,7 +4,7 @@
 
 A simple wrapper around [window.fetch](https://davidwalsh.name/fetch) that adds offline support by caching requests in `sessionStorage`, `localStorage` or _(my favourite)_ [localForage](https://github.com/localForage/localForage).
 
-Offline mode is detected when `navigator.onLine === true` _(if supported)_ or a request is times out.
+Offline mode is detected when `navigator.onLine === true` _(if supported)_ or a request times out.
 
 ```js
 var options = {
