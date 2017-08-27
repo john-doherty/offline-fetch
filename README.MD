@@ -19,7 +19,7 @@ var options = {
             expires: 300 * 1000,        // expires in milliseconds, defaults to -1 (pulls live and re-caches are this)
             debug: true,                // console logs response source to help with debugging
 
-            // if provided uses cacheKeyGenerator to generate per request cache key (defaults to URL + METHOD hash)
+            // used to generate per request cache keys (defaults to URL + METHOD hash if not provided)
             cacheKeyGenerator: function(url, opts, hash) {
                 return 'myapp:' + url;
             }
