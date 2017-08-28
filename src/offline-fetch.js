@@ -9,20 +9,6 @@
 
     'use strict';
 
-    /* --- NOTES --- */
-    // the objective of this script is to always serve fresh content, unless the client is either offline or .expires is set!
-    /**
-     * How it works:
-     *  If .offlineable=true, the response is cached.
-     *  If a future request is made whilst offline, the cached response is returned
-     *  If the request was made without .expires been set, all requests for the same resource will not hit cache unless
-     *      * the request times out
-     *      * the client is offline
-     *  If the request was made with .expires set:
-     *      * future requests will be served from cache until expires is hit
-     *      * when the request has expired, it will attempt to request an update, if that fails, the cache will be used
-     */
-
     /**
      * Adds offline support to window.fetch - returning previous responses no internet connection detected
      * @param {string} url - URL to request
