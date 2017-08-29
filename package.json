@@ -21,8 +21,7 @@
     "gulp-rename": "1.2.2",
     "gulp-string-replace": "^0.4.0",
     "jasmine-node": "1.14.5",
-    "run-sequence": "1.2.2",
-    "w3c-blob": "0.0.1"
+    "run-sequence": "1.2.2"
   },
   "eslintConfig": {
     "extends": "airbnb-base",

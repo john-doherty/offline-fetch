@@ -1,6 +1,5 @@
 'use strict';
 
-var blob = require('w3c-blob');
 var offlineFetch = require('../src/offline-fetch.js');
 var fetch = require('fetch-reply-with');
 
@@ -15,9 +14,6 @@ describe('window.offlineFetch', function () {
             localStorage: storageMock()
         };
 
-        // add Blob support
-        global.Blob = blob;
-
         // create a fake navigator to be consumed within offlineFetch
         global.navigator = { onLine: true };
 
@@ -30,7 +26,6 @@ describe('window.offlineFetch', function () {
         expect(window).toBeDefined();
         expect(navigator).toBeDefined();
         expect(navigator.onLine).toEqual(true);
-        expect(Blob).toBeDefined();
     });
 
     it('should be defined', function() {
