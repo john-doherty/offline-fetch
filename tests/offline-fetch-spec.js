@@ -141,11 +141,49 @@ describe('window.offlineFetch', function () {
         });
     });
 
+    it('should return offline content when navigator.onLine is false', function(done) {
+
+        var now = (new Date()).getTime();
+        var url = 'http://www.' + now + '.com';
+        var status = randomIntBetween(200, 299);
+        var body = String(now * 100);
+
+        // setup intercept
+        fetch(url, {
+            replyWith: {
+                status: status,
+                body: body,
+                headers: {
+                    'content-type': 'text/html'
+                }
+            }
+        });
+
+        // set offline
+        navigator.onLine = false;
+
+        // issue request and confirm it has been intercepted
+        offlineFetch(url, {
+            offline: true
+        })
+        .then(function(res) {
+            expect(res).toBeDefined();
+            expect(res.status).toEqual(status);
+            expect(window.sessionStorage.getItem).toHaveBeenCalled();
+            expect(window.sessionStorage.getItem.calls.length).toEqual(2);
+            return res.text();
+        })
+        .then(function(text) {
+            expect(text).toEqual(body);
+            done();
+        });
+    });
+
     /**
      * tests
-     * 1) check it adds to sessionStorage by default
-     * 2) check it adds to localStorage when set
-     * 3) check it returns offline content when onLine is false
+     * -- 1) check it adds to sessionStorage by default
+     * -- 2) check it adds to localStorage when set
+     * -- 3) check it returns offline content when onLine is false
      * 4) check it returns offline content when a request times out according to timeout property
      * 5) check it checks for new content when cache expires
      * 6) check it still returns cached content if expired but offline
