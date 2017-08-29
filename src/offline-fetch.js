@@ -40,36 +40,13 @@
         // offline not requested, execute a regular fetch
         if (!options || !options.offline) return fetch(url, options);
 
-        //options = options || {}; // ensure we always have an options object
-        //options.offline = options.offline || {}; // ensure we always have an options object
+        // get the offline options, if set to true assumes defaults
+        var offlineOptions = (typeof options.offline !== 'object') ? {} : options.offline;
 
-        //if (typeof options && typeof options !== 'object') return Promise.reject(new Error('Options must be of type object'));
-
-        //if (!options || !options.offline) return fetch(url, options);
-
-
-
-        
-
-        //options.offline = (options.offline === undefined || options.offline === true) ? {} : undefined;
-
-        // if (typeof options.offline !== 'object') {
-        //     options.offline = (options.offline === true) ? {} : undefined;
-        // }
-
-        // if (typeof options.offline === 'boolean') {
-        //     options.offline = {};
-        // }
-
-        //options.offline = (options.offline === true) ? {} : options.offline;
-
-        // could be offline: true (in which case we cache content in session storage but only serve it up when offline - could be via prop or timeout)
-
-        var offlineable = (options.offline);                        // if it's
-        var storage = window[options.storage || 'sessionStorage'];  // determine storage type, defaults to sessionStorage (supports any storage that matches the localStorage API)
-        var timeout = parseInt(options.timeout || '10000', 10);     // request timeout in milliseconds, defaults to 30 seconds
-        var expires = parseInt(options.expires || '-1', 10);        // expires in milliseconds, defaults to -1
-        var debug = (options.debug === true);                       // logs request/cache hits to console if enabled, default false
+        var storage = window[offlineOptions.storage || 'sessionStorage'];  // determine storage type, default sessionStorage (supports any storage that matches the localStorage API)
+        var timeout = parseInt(offlineOptions.timeout || '10000', 10);     // request timeout in milliseconds, defaults to 30 seconds
+        var expires = parseInt(offlineOptions.expires || '-1', 10);        // expires in milliseconds, defaults to -1
+        var debug = (offlineOptions.debug === true);                       // logs request/cache hits to console if enabled, default false
         var method = options.method || 'GET';                       // method, defaults to GET
         var isOffline = (navigator.onLine === false);               // detect offline if supported (if true, browser supports the property & client is offline)
         var requestHash = stringToHash(method + '|' + url);         // a hash of the method + url, used as default cache key if no generator passed
@@ -109,7 +86,7 @@
             return request.then(function (res) {
 
                 // if this request is to be cached and has a success response, cache it
-                if (offlineable && res.status === 200) {
+                if (res.status >= 200 && res.status <= 300) {
 
                     var contentType = res.headers.get('Content-Type') || '';
 

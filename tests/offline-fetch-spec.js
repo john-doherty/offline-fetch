@@ -11,8 +11,8 @@ describe('window.offlineFetch', function () {
 
         // create fake storage objects we can spy on
         global.window = {
-            sessionStorage: jasmine.createSpyObj('sessionStorage', ['getItem', 'setItem']),
-            localStorage: jasmine.createSpyObj('localStorage', ['getItem', 'setItem'])
+            sessionStorage: storageMock(),
+            localStorage: storageMock()
         };
 
         // add Blob support
@@ -21,11 +21,13 @@ describe('window.offlineFetch', function () {
         // create a fake navigator to be consumed within offlineFetch
         global.navigator = { onLine: true };
 
+        // spy on storage function so we can verify responses are cached
+        spyOn(window.sessionStorage, 'getItem').andCallThrough();
+        spyOn(window.sessionStorage, 'setItem').andCallThrough();
+        spyOn(window.localStorage, 'getItem').andCallThrough();
+        spyOn(window.localStorage, 'setItem').andCallThrough();
+
         expect(window).toBeDefined();
-        expect(window.sessionStorage.getItem).toBeDefined();
-        expect(window.sessionStorage.setItem).toBeDefined();
-        expect(window.localStorage.getItem).toBeDefined();
-        expect(window.localStorage.setItem).toBeDefined();
         expect(navigator).toBeDefined();
         expect(navigator.onLine).toEqual(true);
         expect(Blob).toBeDefined();
@@ -73,13 +75,13 @@ describe('window.offlineFetch', function () {
 
         var url = 'http://www.orcascan.com';
         var status = randomIntBetween(200, 299);
-        var data = 'Great Barcode App!';
+        var body = 'Great Barcode App!';
 
         // setup intercept
         fetch(url, {
             replyWith: {
                 status: status,
-                body: data,
+                body: body,
                 headers: {
                     'content-type': 'text/html'
                 }
@@ -91,11 +93,13 @@ describe('window.offlineFetch', function () {
             expect(res).toBeDefined();
             expect(res.status).toEqual(status);
             expect(window.sessionStorage.setItem).toHaveBeenCalled();
-            //expect(window.sessionStorage.setItem.calls.length).toEqual(1);
+
+            // there should be 2 entries as it also saves the time it was cached
+            expect(window.sessionStorage.setItem.calls.length).toEqual(2);
             return res.text();
         })
         .then(function(text) {
-            expect(text).toEqual(data);
+            expect(text).toEqual(body);
             done();
         });
     });
@@ -105,20 +109,20 @@ describe('window.offlineFetch', function () {
         var now = (new Date()).getTime();
         var url = 'http://www.' + now + '.com';
         var status = randomIntBetween(200, 299);
-        var data = String(now * 100);
+        var body = String(now * 100);
 
         // setup intercept
         fetch(url, {
             replyWith: {
                 status: status,
-                body: data,
+                body: body,
                 headers: {
                     'content-type': 'text/html'
                 }
             }
         });
 
-        // issue request and conform it has been intercepted
+        // issue request and confirm it has been intercepted
         offlineFetch(url, {
             offline: {
                 storage: 'localStorage'
@@ -128,11 +132,11 @@ describe('window.offlineFetch', function () {
             expect(res).toBeDefined();
             expect(res.status).toEqual(status);
             expect(window.localStorage.setItem).toHaveBeenCalled();
-            //expect(window.localStorage.setItem.calls.length).toEqual(1);
+            expect(window.localStorage.setItem.calls.length).toEqual(2);
             return res.text();
         })
         .then(function(text) {
-            expect(text).toEqual(data);
+            expect(text).toEqual(body);
             done();
         });
     });
@@ -155,6 +159,43 @@ describe('window.offlineFetch', function () {
 
 /* --- HELPERS --- */
 
+/**
+ * Returns a random number between two numbers
+ * @param {integer} min - minimum number
+ * @param {integer} max - maximum number
+ * @returns {integer} number between min and max
+ */
 function randomIntBetween(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+/**
+ * Creates a simple storage object mimicking the localStorage API
+ * @returns {object} localStorage mock object
+ */
+function storageMock() {
+
+    var storage = {};
+
+    return {
+        setItem: function(key, value) {
+            storage[key] = value || '';
+        },
+        getItem: function(key) {
+            return key in storage ? storage[key] : null;
+        },
+        removeItem: function(key) {
+            delete storage[key];
+        },
+        get length() {
+            return Object.keys(storage).length;
+        },
+        key: function(i) {
+            var keys = Object.keys(storage);
+            return keys[i] || null;
+        },
+        keys: function() {
+            return Object.keys(storage);
+        }
+    };
 }

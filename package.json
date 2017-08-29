@@ -141,6 +141,6 @@
     }
   },
   "dependencies": {
-    "fetch-reply-with": "^1.2.0"
+    "fetch-reply-with": "^1.2.3"
   }
 }
