@@ -93,9 +93,7 @@ describe('window.offlineFetch', function () {
             expect(res).toBeDefined();
             expect(res.status).toEqual(status);
             expect(window.sessionStorage.setItem).toHaveBeenCalled();
-
-            // there should be 2 entries as it also saves the time it was cached
-            expect(window.sessionStorage.setItem.calls.length).toEqual(2);
+            expect(window.sessionStorage.setItem.calls.length).toEqual(1);
             return res.text();
         })
         .then(function(text) {
@@ -132,7 +130,7 @@ describe('window.offlineFetch', function () {
             expect(res).toBeDefined();
             expect(res.status).toEqual(status);
             expect(window.localStorage.setItem).toHaveBeenCalled();
-            expect(window.localStorage.setItem.calls.length).toEqual(2);
+            expect(window.localStorage.setItem.calls.length).toEqual(1);
             return res.text();
         })
         .then(function(text) {
@@ -170,7 +168,7 @@ describe('window.offlineFetch', function () {
             expect(res).toBeDefined();
             expect(res.status).toEqual(status);
             expect(window.sessionStorage.getItem).toHaveBeenCalled();
-            expect(window.sessionStorage.getItem.calls.length).toEqual(2);
+            expect(window.sessionStorage.getItem.calls.length).toEqual(1);
             return res.text();
         })
         .then(function(text) {

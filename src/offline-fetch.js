@@ -49,34 +49,30 @@
         var debug = (offlineOptions.debug === true);                       // logs request/cache hits to console if enabled, default false
         var method = options.method || 'GET';                       // method, defaults to GET
         var isOffline = (navigator.onLine === false);               // detect offline if supported (if true, browser supports the property & client is offline)
-        var requestHash = stringToHash(method + '|' + url);         // a hash of the method + url, used as default cache key if no generator passed
+        var requestHash = 'key:' + stringToHash(method + '|' + url);         // a hash of the method + url, used as default cache key if no generator passed
 
         // if cacheKeyGenerator provided, use that otherwise use the hash generated above
         var cacheKey = (options.cacheKeyGenerator) ? options.cacheKeyGenerator(url, options, requestHash) : requestHash;
 
-        // wrap cache gets in Promises, just in case we're using a promise based library such as window['localforage']
-        var cacheGets = [
-            Promise.resolve(storage.getItem(cacheKey)),
-            Promise.resolve(storage.getItem(cacheKey + ':ts'))
-        ];
-
         // execute cache gets
-        return Promise.all(cacheGets).then(function (data) {
+        return Promise.resolve(storage.getItem(cacheKey)).then(function (cachedResponse) {
 
-            var cachedResponse = data[0];                               // the cached response from storage
-            var whenCached = parseInt(data[1] || '0', 10);              // the date-time (in ms) the response was cached from storage
-            var cacheExpired = (expires > 0) ? ((Date.now() - whenCached)) < expires : true;
+            // convert to JSON if it's not already
+            cachedResponse = (typeof cachedResponse !== 'object') ? JSON.parse(cachedResponse) : cachedResponse;
+
+            // determine if the cached content has expired
+            var cacheExpired = (cachedResponse && expires > 0) ? ((Date.now() - cachedResponse.storedAt)) < expires : true;
 
             // if the request is cached and we're offline, return it
             if (cachedResponse && isOffline) {
                 if (debug) log('offlineFetch[cache] (offline): ' + url);
-                return Promise.resolve(new Response(new Blob([cachedResponse])));
+                return Promise.resolve(new Response(cachedResponse.content, { headers: { 'Content-Type': cachedResponse.contentType } }));
             }
 
             // if the request is cached, expires is set and not expired, return it
             if (cachedResponse && expires > 0 && !cacheExpired) {
                 if (debug) log('offlineFetch[cache]: ' + url);
-                return Promise.resolve(new Response(new Blob([cachedResponse])));
+                return Promise.resolve(new Response(cachedResponse.content, { headers: { 'Content-Type': cachedResponse.contentType } }));
             }
 
             // if we have a timeout, wrap fetch in timeout-promise otherwise execute a normal fetch
@@ -97,11 +93,12 @@
                         // This way we're being un-intrusive.
                         res.clone().text().then(function (content) {
 
-                            // store the content in cache
-                            storage.setItem(cacheKey, content);
-
-                            // store the date-time in milliseconds that the item was cached
-                            storage.setItem(cacheKey + ':ts', Date.now());
+                            // store the content in cache as a JSON object
+                            storage.setItem(cacheKey, {
+                                contentType: contentType,   // the response content type
+                                content: content,           // the body of the response as a string
+                                storedAt: Date.now()        // store the date-time in milliseconds that the item was cached
+                            });
                         });
                     }
                 }
@@ -115,7 +112,7 @@
                 // return cached response if we have it
                 if (cachedResponse) {
                     if (debug) log('offlineFetch[cache] (timedout): ' + url);
-                    return Promise.resolve(new Response(new Blob([cachedResponse])));
+                    return Promise.resolve(new Response(cachedResponse.content, { headers: { 'Content-Type': cachedResponse.contentType } }));
                 }
 
                 // otherwise rethrow the error as it timedout but we dont have cache
@@ -184,10 +181,10 @@
                 clearTimeout(timer);
                 resolve(res);
             })
-            .catch(function (err) {
-                clearTimeout(timer);
-                reject(err);
-            });
+                .catch(function (err) {
+                    clearTimeout(timer);
+                    reject(err);
+                });
         });
     }
 
