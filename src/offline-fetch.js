@@ -81,8 +81,8 @@
             // execute the request
             return request.then(function (res) {
 
-                // if this request is to be cached and has a success response, cache it
-                if (res.status >= 200 && res.status <= 300) {
+                // if response status is within 200-299 range inclusive res.ok will be true
+                if (res.ok) {
 
                     var contentType = res.headers.get('Content-Type') || '';
 
