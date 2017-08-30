@@ -45,25 +45,38 @@
         // get the offline options, if set to true assumes defaults
         var offlineOptions = (typeof options.offline !== 'object') ? {} : options.offline;
 
-        var storage = window[offlineOptions.storage || 'sessionStorage'];  // storage type, default sessionStorage (supports any storage matching localStorage API)
-        var timeout = parseInt(offlineOptions.timeout || '10000', 10);     // request timeout in milliseconds, defaults to 30 seconds
-        var expires = parseInt(offlineOptions.expires || '-1', 10);        // expires in milliseconds, defaults to -1 so checks for new content on each request
-        var debug = (offlineOptions.debug === true);                       // logs request/cache hits to console if enabled, default false
-        var method = options.method || 'GET';                              // method, defaults to GET
-        var isOffline = (navigator.onLine === false);                      // detect offline if supported (if true, browser supports the property & client is offline)
-        var requestHash = 'offline:' + stringToHash(method + '|' + url);   // a hash of the method + url, used as default cache key if no generator passed
+        // storage type, default sessionStorage (supports any storage matching localStorage API)
+        var storage = window[offlineOptions.storage || 'sessionStorage'];
+
+        // request timeout in milliseconds, defaults to 30 seconds
+        var timeout = parseInt(offlineOptions.timeout || '10000', 10);
+
+        // expires in milliseconds, defaults to -1 so checks for new content on each request
+        var expires = (typeof offlineOptions.expires === 'number') ? offlineOptions.expires : -1;
+
+        // logs request/cache hits to console if enabled, default false
+        var debug = (offlineOptions.debug === true);
+
+        // method, defaults to GET
+        var method = options.method || 'GET';
+
+        // detect offline if supported (if true, browser supports the property & client is offline)
+        var isOffline = (navigator.onLine === false);
+
+        // a hash of the method + url, used as default cache key if no generator passed
+        var requestHash = 'offline:' + stringToHash(method + '|' + url);
 
         // if cacheKeyGenerator provided, use that otherwise use the hash generated above
         var cacheKey = (typeof options.cacheKeyGenerator === 'function') ? options.cacheKeyGenerator(url, options, requestHash) : requestHash;
 
-        // execute cache gets
+        // execute cache gets with a promise, just incase we're using a promise storage
         return Promise.resolve(storage.getItem(cacheKey)).then(function (cachedResponse) {
 
             // convert to JSON if it's not already
             cachedResponse = (typeof cachedResponse !== 'object') ? JSON.parse(cachedResponse) : cachedResponse;
 
             // determine if the cached content has expired
-            var cacheExpired = (cachedResponse && expires > 0) ? ((Date.now() - cachedResponse.storedAt) > expires) : true;
+            var cacheExpired = (cachedResponse && expires > 0) ? ((Date.now() - cachedResponse.storedAt) > expires) : false;
 
             // if the request is cached and we're offline, return cached content
             if (cachedResponse && isOffline) {
@@ -71,13 +84,13 @@
                 return Promise.resolve(new Response(cachedResponse.content, { headers: { 'Content-Type': cachedResponse.contentType } }));
             }
 
-            // if the request is cached, expires is set but not expired, return cached content
-            if (cachedResponse && expires > 0 && !cacheExpired) {
+            // if the request is cached and not expired, return cached content
+            if (cachedResponse && !cacheExpired) {
                 if (debug) log('offlineFetch[cache]: ' + url);
                 return Promise.resolve(new Response(cachedResponse.content, { headers: { 'Content-Type': cachedResponse.contentType } }));
             }
 
-            // execute the request within a timeout, if it fails, return cached response
+            // execute the request within a timeout, if it times-out, return cached response
             return promiseTimeout(timeout, fetch(url, options)).then(function (res) {
 
                 // if response status is within 200-299 range inclusive res.ok will be true
@@ -108,7 +121,7 @@
             })
             .catch(function (error) {
 
-                if ((error instanceof Error) && (error.message === 'Timedout')) {
+                if ((error instanceof Error) && (error.message === 'Promise Timed Out')) {
 
                     // return cached response if we have it
                     if (cachedResponse) {
@@ -120,7 +133,7 @@
                     throw new Error('Request timed out but no cache available');
                 }
 
-                // it's a request error, return it as normal
+                // it's a genuine request error, reject as normal
                 return Promise.reject(error);
             });
         });
@@ -129,7 +142,7 @@
     /* --- HELPERS --- */
 
     /**
-     * Logs to console if its available
+     * Log to console if it's available
      * @param {any} value - value to log to the console
      * @returns {void}
      */
@@ -140,9 +153,9 @@
     }
 
     /**
-     * Returns the hash of string (slightly compressed)
+     * Returns a hash of a string (slightly compressed)
      * @param {string} value - string to hash
-     * @returns {string} hash of the value
+     * @returns {string} hash of the value passed in
      */
     function stringToHash(value) {
 
@@ -179,17 +192,17 @@
 
             // create a timeout to reject promise if not resolved
             var timer = setTimeout(function () {
-                reject(new Error('Timedout'));
+                reject(new Error('Promise Timed Out'));
             }, ms);
 
             promise.then(function (res) {
                 clearTimeout(timer);
                 resolve(res);
             })
-                .catch(function (err) {
-                    clearTimeout(timer);
-                    reject(err);
-                });
+            .catch(function (err) {
+                clearTimeout(timer);
+                reject(err);
+            });
         });
     }
 
