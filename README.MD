@@ -35,7 +35,7 @@ offlineFetch('http://www.orcascan.com/', options).then(function(data){
 });
 ```
 
-Supports any global `localStorage`-like API, and IndexedDB or WebSQL when used with [localForage](https://github.com/localForage/localForage).
+Supports any global `localStorage`-like API, including IndexedDB or WebSQL when used with [localForage](https://github.com/localForage/localForage).
 
 ## Credit where it's due
 
