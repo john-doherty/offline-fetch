@@ -17,12 +17,14 @@
      *      var options = {
      *          offline: {
      *              storage: 'localStorage',    // where should we cache the offline responses
-     *              timeout: 30 * 1000,         // how long should we wait before considering a connection offline?
-     *              expires: 300 * 1000,        // how long should we store content without checking for an update?
+     *              timeout: 30 * 1000,         // how long should wait before considering the request a failure (default 750ms)
+     *              expires: 300 * 1000,        // how long should store content be cached for without checking for an update?
      *              debug: true,                // console log all requests and their source (cache etc)
+     *
      *              // timeouts are not retried as they could cause the browser to hang
-     *              retries: 3,                 // number of times to retry the request before considering it failed
-     *              retryDelay: 1000,           // number of milliseconds to wait between each retry
+     *              retries: 3,                 // number of times to retry the request before considering it failed (defaults to 3)
+     *              retryDelay: 1000,           // number of milliseconds to wait between each retry (defaults to 1000ms)
+     *
      *              // what unique key should we use to cache the content
      *              cacheKeyGenerator: function(url, opts, hash) {
      *                  return 'myapp:' + url;
@@ -50,17 +52,17 @@
         // storage type, default sessionStorage (supports any storage matching localStorage API)
         var storage = window[offlineOptions.storage || 'sessionStorage'];
 
-        // request timeout in milliseconds, defaults to 30 seconds
-        var timeout = parseInt(offlineOptions.timeout || '10000', 10);
+        // request timeout in milliseconds, defaults to 750ms
+        var timeout = parseInt(offlineOptions.timeout || '750', 10);
 
         // number of retries before giving up
-        var retries = parseInt(offlineOptions.retries || '-1', 10);
+        var retries = parseInt(offlineOptions.retries || '-1', 3);
 
         // number of milliseconds to wait between each retry
-        var retryDelay = parseInt(offlineOptions.retryDelay || '-1', 10);
+        var retryDelay = parseInt(offlineOptions.retryDelay || '1000', 10);
 
-        // expires in milliseconds, defaults to -1 so checks for new content on each request
-        var expires = (typeof offlineOptions.expires === 'number') ? offlineOptions.expires : -1;
+        // expires in milliseconds, defaults to 1000ms (set to -1 to check for updates with every request)
+        var expires = (typeof offlineOptions.expires === 'number') ? offlineOptions.expires : 1000;
 
         // logs request/cache hits to console if enabled, default false
         var debug = (offlineOptions.debug === true);

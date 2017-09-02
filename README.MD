@@ -15,12 +15,12 @@ var options = {
     // new offline property with optional config
     offline: {
         storage: 'localStorage',    // use localStorage (defaults to sessionStorage)
-        timeout: 30 * 1000,         // request timeout in milliseconds, defaults to 30 seconds
-        expires: 300 * 1000,        // expires in milliseconds, defaults to -1 (pulls live and re-caches are this)
-        debug: true,                // console logs response source to help with debugging
+        timeout: 750,               // request timeout in milliseconds, defaults 730ms
+        expires: 1000,              // expires in milliseconds, defaults 1000ms (set to -1 to check for updates with every request)
+        debug: true,                // console log request info to help with debugging
 
         // timeouts are not retried as they risk cause the browser to hang
-        retries: 3,                 // number of times to retry the request before considering it failed
+        retries: 3,                 // number of times to retry the request before considering it failed, default 3 (timeouts are not retried)
         retryDelay: 1000,           // number of milliseconds to wait between each retry
 
         // used to generate per request cache keys (defaults to URL + METHOD hash if not provided)
