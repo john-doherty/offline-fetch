@@ -2,9 +2,9 @@
 
 [![Linked In](https://img.shields.io/badge/Linked-In-blue.svg)](https://www.linkedin.com/in/john-i-doherty) [![Twitter Follow](https://img.shields.io/twitter/follow/CambridgeMVP.svg?style=social&label=Twitter&style=plastic)](https://twitter.com/CambridgeMVP)
 
-A simple wrapper around [window.fetch](https://davidwalsh.name/fetch) that adds offline support by caching requests in `sessionStorage`, `localStorage` or [localForage](https://github.com/localForage/localForage).
+A simple wrapper around [window.fetch](https://davidwalsh.name/fetch) that adds offline support by caching requests in `sessionStorage`, `localStorage` or IndexedDB, WebSQL when used with [localForage](https://github.com/localForage/localForage).
 
-Offline mode is detected when `navigator.onLine === true` or a request times out.
+Offline mode is detected when a request times out, or `navigator.onLine === true`.
 
 ```js
 var options = {
@@ -35,11 +35,11 @@ offlineFetch('http://www.orcascan.com/', options).then(function(data){
 });
 ```
 
-Supports any global `localStorage`-like API, including IndexedDB or WebSQL when used with [localForage](https://github.com/localForage/localForage).
+_Supports any global `localStorage`-like API, including promised based._
 
 ## Credit where it's due
 
-This script was heavily influenced by the following posts:
+This script was heavily influenced by these two great posts:
  * [Cache Fetched AJAX Requests Locally: Wrapping the Fetch API](https://www.sitepoint.com/cache-fetched-ajax-requests/)
  * [Working Off the Grid with HTML5 Offline](https://www.html5rocks.com/en/mobile/workingoffthegrid/)
 
