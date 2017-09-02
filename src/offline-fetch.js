@@ -116,7 +116,7 @@
             return promiseTimeout(timeout, fetch(url, options)).then(function (res) {
 
                 // if response status is within 200-299 range inclusive res.ok will be true
-                if ((res.status >= 200 && res.status <= 299) || res.status === 401) {
+                if (res.status >= 200 && res.status <= 299) {
 
                     var contentType = res.headers.get('Content-Type') || '';
 
