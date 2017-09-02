@@ -9,22 +9,26 @@ Offline mode is detected when `navigator.onLine === true` _(if supported)_ or a 
 ```js
 var options = {
 
-        // typical fetch property
-        method: 'GET',
+    // typical fetch property
+    method: 'GET',
 
-        // new offline property with optional config
-        offline: {
-            storage: 'localStorage',    // use localStorage (defaults to sessionStorage)
-            timeout: 30 * 1000,         // request timeout in milliseconds, defaults to 30 seconds
-            expires: 300 * 1000,        // expires in milliseconds, defaults to -1 (pulls live and re-caches are this)
-            debug: true,                // console logs response source to help with debugging
+    // new offline property with optional config
+    offline: {
+        storage: 'localStorage',    // use localStorage (defaults to sessionStorage)
+        timeout: 30 * 1000,         // request timeout in milliseconds, defaults to 30 seconds
+        expires: 300 * 1000,        // expires in milliseconds, defaults to -1 (pulls live and re-caches are this)
+        debug: true,                // console logs response source to help with debugging
 
-            // used to generate per request cache keys (defaults to URL + METHOD hash if not provided)
-            cacheKeyGenerator: function(url, opts, hash) {
-                return 'myapp:' + url;
-            }
+        // timeouts are not retried as they risk cause the browser to hang
+        retries: 3,                 // number of times to retry the request before considering it failed
+        retryDelay: 1000,           // number of milliseconds to wait between each retry
+
+        // used to generate per request cache keys (defaults to URL + METHOD hash if not provided)
+        cacheKeyGenerator: function(url, opts, hash) {
+            return 'myapp:' + url;
         }
-    };
+    }
+};
 
 offlineFetch('http://www.orcascan.com/', options).then(function(data){
     // data contains response...
@@ -33,11 +37,30 @@ offlineFetch('http://www.orcascan.com/', options).then(function(data){
 
 _Supports any global `localStorage`-like API including promise based [localForage](https://github.com/localForage/localForage)._
 
-## Credit where credit is due
+## Credit where it's due
 
-This script was heavily influenced by the following posts _(thank you)_:
+This script was heavily influenced by the following posts:
  * [Cache Fetched AJAX Requests Locally: Wrapping the Fetch API](https://www.sitepoint.com/cache-fetched-ajax-requests/)
  * [Working Off the Grid with HTML5 Offline](https://www.html5rocks.com/en/mobile/workingoffthegrid/)
+
+## Unit Tests
+
+1. Checkout using `git clone https://github.com/john-doherty/offline-fetch`
+2. Navigate into project folder `cd fetch-reply-with`
+3. Install dependencies `npm install`
+4. Run the tests `npm test`
+
+## Contributing
+
+1. Fork it!
+2. Create your feature branch: `git checkout -b my-new-feature`
+3. Commit your changes: `git commit -m 'Add some feature'`
+4. Push to the branch: `git push origin my-new-feature`
+5. Submit a pull request :)
+
+## History
+
+For detailed changelog, check [Releases](https://github.com/john-doherty/offline-fetch/releases).
 
 ## License
 

@@ -20,7 +20,8 @@
      *              timeout: 30 * 1000,         // how long should we wait before considering a connection offline?
      *              expires: 300 * 1000,        // how long should we store content without checking for an update?
      *              debug: true,                // console log all requests and their source (cache etc)
-     *              retries: 3,                 // number of times to reattempt the request before considering it failed
+     *              // timeouts are not retried as they could cause the browser to hang
+     *              retries: 3,                 // number of times to retry the request before considering it failed
      *              retryDelay: 1000,           // number of milliseconds to wait between each retry
      *              // what unique key should we use to cache the content
      *              cacheKeyGenerator: function(url, opts, hash) {
@@ -77,24 +78,38 @@
         var cacheKey = (typeof options.cacheKeyGenerator === 'function') ? options.cacheKeyGenerator(url, options, requestHash) : requestHash;
 
         // execute cache gets with a promise, just incase we're using a promise storage
-        return Promise.resolve(storage.getItem(cacheKey)).then(function (cachedResponse) {
+        return Promise.resolve(storage.getItem(cacheKey)).then(function (cachedItem) {
 
-            // convert to JSON if it's not already
-            cachedResponse = (typeof cachedResponse !== 'object') ? JSON.parse(cachedResponse) : cachedResponse;
+            // convert to JSON object if it's not already
+            cachedItem = (typeof cachedItem === 'string') ? JSON.parse(cachedItem) : cachedItem;
+
+            // convert cached data into a fetch Response object, allowing consumers to process as normal
+            var cachedResponse = null;
+
+            if (cachedItem) {
+
+                cachedResponse = new Response(cachedItem.content, {
+                    status: cachedItem.status,
+                    statusText: cachedItem.statusText,
+                    headers: {
+                        'Content-Type': cachedItem.contentType
+                    }
+                });
+            }
 
             // determine if the cached content has expired
-            var cacheExpired = (cachedResponse && expires > 0) ? ((Date.now() - cachedResponse.storedAt) > expires) : false;
+            var cacheExpired = (cachedItem && expires > 0) ? ((Date.now() - cachedItem.storedAt) > expires) : false;
 
             // if the request is cached and we're offline, return cached content
             if (cachedResponse && isOffline) {
                 if (debug) log('offlineFetch[cache] (offline): ' + url);
-                return Promise.resolve(new Response(cachedResponse.content, { status: cachedResponse.status, statusText: cachedResponse.statusText, headers: { 'Content-Type': cachedResponse.contentType } }));
+                return Promise.resolve(cachedResponse);
             }
 
             // if the request is cached, expires is set but not expired, return cached content
             if (cachedResponse && !cacheExpired) {
                 if (debug) log('offlineFetch[cache]: ' + url);
-                return Promise.resolve(new Response(cachedResponse.content, { status: cachedResponse.status, statusText: cachedResponse.statusText, headers: { 'Content-Type': cachedResponse.contentType } }));
+                return Promise.resolve(cachedResponse);
             }
 
             // execute the request within a timeout, if it times-out, return cached response
@@ -130,23 +145,24 @@
             })
             .catch(function (error) {
 
-                if (retries) {
-                    // add retry params
-                    options.retries = retries;
-                    options.retryDelay = retryDelay;
+                var errorMessage = error.message || '';
+                var timedout = (errorMessage) === 'Promise Timed Out';
 
-                    // retry fetch
-                    return fetchRetry(url, options);
+                // if its a timeout and we have a cached response, return it
+                if (timedout && cachedResponse) {
+
+                    if (debug) log('offlineFetch[cache] (timedout): ' + url);
+
+                    return Promise.resolve(cachedResponse);
                 }
 
-                return Promise.reject(error);
-            })
-            .catch(function (error) {
+                // if it was not a timeout, but we have retries, try them
+                if (!timedout && retries) {
 
-                // return cached response if we have it
-                if (cachedResponse) {
-                    if (debug) log('offlineFetch[cache] (timedout): ' + url);
-                    return Promise.resolve(new Response(cachedResponse.content, { status: cachedResponse.status, statusText: cachedResponse.statusText, headers: { 'Content-Type': cachedResponse.contentType } }));
+                    if (debug) log('offlineFetch[' + errorMessage + '] (retrying): ' + url);
+
+                    // retry fetch
+                    return fetchRetry(url, options, retries, retryDelay, debug);
                 }
 
                 // it's a genuine request error, reject as normal
@@ -160,39 +176,37 @@
     /**
      * Retries a fetch if it fails
      * @param {string} url - url to fetch
-     * @param {any} options - regular fetch options with additional .retries && retryDelay in ms
+     * @param {object} options - fetch options
+     * @param {integer} retries - number of times to retry the request
+     * @param {integer} retryDelay - the number of milliseconds to wait between retries
+     * @param {boolean} debug - logs retry count to console if true
      * @returns {Promise} executes .then if successful otherwise .catch
      */
-    function fetchRetry(url, options) {
+    function fetchRetry(url, options, retries, retryDelay, debug) {
 
-        var retries = 3;
-        var retryDelay = 1000;
-
-        if (options && options.retries) {
-            retries = options.retries;
-        }
-
-        if (options && options.retryDelay) {
-            retryDelay = options.retryDelay;
-        }
+        retries = retries || 3;
+        retryDelay = retryDelay || 1000;
 
         return new Promise(function (resolve, reject) {
 
             var wrappedFetch = function (n) {
-                fetch(url, options)
-                    .then(function (response) {
-                        resolve(response);
-                    })
-                    .catch(function (error) {
-                        if (n > 0) {
-                            setTimeout(function () {
-                                wrappedFetch(--n);
-                            }, retryDelay);
-                        }
-                        else {
-                            reject(error);
-                        }
-                    });
+
+                if (debug) log('offlineFetch[retrying] (' + n + ' of ' + retries + '): ' + url);
+
+                fetch(url, options).then(function (response) {
+                    resolve(response);
+                })
+                .catch(function (error) {
+
+                    if (n > 0) {
+                        setTimeout(function () {
+                            wrappedFetch(--n);
+                        }, retryDelay);
+                    }
+                    else {
+                        reject(error);
+                    }
+                });
             };
 
             wrappedFetch(retries);
