@@ -35,7 +35,7 @@ offlineFetch('http://www.orcascan.com/', options).then(function(data){
 });
 ```
 
-_Supports any global `localStorage`-like API, including promised based._
+_Supports any global `localStorage`-like API, including promised based `getItem`, `setItem`._
 
 ## Credit where it's due
 
