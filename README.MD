@@ -2,9 +2,9 @@
 
 [![Linked In](https://img.shields.io/badge/Linked-In-blue.svg)](https://www.linkedin.com/in/john-i-doherty) [![Twitter Follow](https://img.shields.io/twitter/follow/CambridgeMVP.svg?style=social&label=Twitter&style=plastic)](https://twitter.com/CambridgeMVP)
 
-A simple wrapper around [window.fetch](https://davidwalsh.name/fetch) that adds offline support by caching requests in `sessionStorage`, `localStorage` or _(my favourite)_ [localForage](https://github.com/localForage/localForage).
+A simple wrapper around [window.fetch](https://davidwalsh.name/fetch) that adds offline support by caching requests in `sessionStorage`, `localStorage` or [localForage](https://github.com/localForage/localForage).
 
-Offline mode is detected when `navigator.onLine === true` _(if supported)_ or a request times out.
+Offline mode is detected when `navigator.onLine === true` or a request times out.
 
 ```js
 var options = {
@@ -35,7 +35,7 @@ offlineFetch('http://www.orcascan.com/', options).then(function(data){
 });
 ```
 
-_Supports any global `localStorage`-like API including promise based [localForage](https://github.com/localForage/localForage)._
+Supports any global `localStorage`-like API, and IndexedDB or WebSQL when used with [localForage](https://github.com/localForage/localForage).
 
 ## Credit where it's due
 
