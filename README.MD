@@ -18,6 +18,7 @@ var options = {
         timeout: 750,               // request timeout in milliseconds, defaults 730ms
         expires: 1000,              // expires in milliseconds, defaults 1000ms (set to -1 to check for updates with every request)
         debug: true,                // console log request info to help with debugging
+        renew: false,               // if true, request is fetched regardless of expire state. Response is and added to cache
 
         // timeouts are not retried as they risk cause the browser to hang
         retries: 3,                 // number of times to retry the request before considering it failed, default 3 (timeouts are not retried)

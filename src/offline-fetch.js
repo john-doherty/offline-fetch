@@ -17,14 +17,13 @@
      *      var options = {
      *          offline: {
      *              storage: 'localStorage',    // where should we cache the offline responses
-     *              timeout: 30 * 1000,         // how long should wait before considering the request a failure (default 750ms)
-     *              expires: 300 * 1000,        // how long should store content be cached for without checking for an update?
+     *              timeout: 30 * 1000,         // how long should we wait before considering a connection offline?
+     *              expires: 300 * 1000,        // how long should we store content without checking for an update?
      *              debug: true,                // console log all requests and their source (cache etc)
-     *
+     *              renew: false,               // if true, this request is fetched regardless of expire state and added to cache
      *              // timeouts are not retried as they could cause the browser to hang
-     *              retries: 3,                 // number of times to retry the request before considering it failed (defaults to 3)
-     *              retryDelay: 1000,           // number of milliseconds to wait between each retry (defaults to 1000ms)
-     *
+     *              retries: 3,                 // number of times to retry the request before considering it failed
+     *              retryDelay: 1000,           // number of milliseconds to wait between each retry
      *              // what unique key should we use to cache the content
      *              cacheKeyGenerator: function(url, opts, hash) {
      *                  return 'myapp:' + url;
@@ -52,17 +51,20 @@
         // storage type, default sessionStorage (supports any storage matching localStorage API)
         var storage = window[offlineOptions.storage || 'sessionStorage'];
 
-        // request timeout in milliseconds, defaults to 750ms
-        var timeout = parseInt(offlineOptions.timeout || '750', 10);
+        // request timeout in milliseconds, defaults to 30 seconds
+        var timeout = parseInt(offlineOptions.timeout || '10000', 10);
 
         // number of retries before giving up
-        var retries = parseInt(offlineOptions.retries || '-1', 3);
+        var retries = parseInt(offlineOptions.retries || '-1', 10);
 
         // number of milliseconds to wait between each retry
-        var retryDelay = parseInt(offlineOptions.retryDelay || '1000', 10);
+        var retryDelay = parseInt(offlineOptions.retryDelay || '-1', 10);
 
-        // expires in milliseconds, defaults to 1000ms (set to -1 to check for updates with every request)
-        var expires = (typeof offlineOptions.expires === 'number') ? offlineOptions.expires : 1000;
+        // expires in milliseconds, defaults to -1 so checks for new content on each request
+        var expires = (typeof offlineOptions.expires === 'number') ? offlineOptions.expires : -1;
+
+        // should this request skip cache?
+        var renew = (offlineOptions.renew === true);
 
         // logs request/cache hits to console if enabled, default false
         var debug = (offlineOptions.debug === true);
@@ -108,8 +110,8 @@
                 return Promise.resolve(cachedResponse);
             }
 
-            // if the request is cached, expires is set but not expired, return cached content
-            if (cachedResponse && !cacheExpired) {
+            // if the request is cached, expires is set but not expired, and this is not a renew request, return cached content
+            if (cachedResponse && !cacheExpired && !renew) {
                 if (debug) log('offlineFetch[cache]: ' + url);
                 return Promise.resolve(cachedResponse);
             }
