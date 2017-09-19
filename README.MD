@@ -1,5 +1,6 @@
 # offline-fetch
 
+[![Shippable branch](https://img.shields.io/shippable/59a3e41510cb4d07000a10cd/master.svg)](https://app.shippable.com/projects/59a3e41510cb4d07000a10cd)
 [![Linked In](https://img.shields.io/badge/Linked-In-blue.svg)](https://www.linkedin.com/in/john-i-doherty)
 [![Twitter Follow][twitter-image]][twitter-url]
 
