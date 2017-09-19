@@ -11,6 +11,16 @@
 
 Offline mode is detected when `navigator.onLine === true` or a request times out.
 
+## Usage
+
+Copy [offline-fetch.min.js](dist/offline-fetch.min.js) into your application:
+
+```html
+<script src="js/offline-fetch.min.js"></script>
+```
+
+Replace `fetch` calls with `offlineFetch` and pass in additional parameter:
+
 ```js
 var options = {
 
