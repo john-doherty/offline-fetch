@@ -1,10 +1,14 @@
 # offline-fetch
 
-[![Linked In](https://img.shields.io/badge/Linked-In-blue.svg)](https://www.linkedin.com/in/john-i-doherty) [![Twitter Follow](https://img.shields.io/twitter/follow/CambridgeMVP.svg?style=social&label=Twitter&style=plastic)](https://twitter.com/CambridgeMVP)
+[![Linked In](https://img.shields.io/badge/Linked-In-blue.svg)](https://www.linkedin.com/in/john-i-doherty)
+[![Twitter Follow][twitter-image]][twitter-url]
 
-A simple wrapper around [window.fetch](https://davidwalsh.name/fetch) that adds offline support by caching requests in `sessionStorage`, `localStorage` or IndexedDB, WebSQL when used with [localForage](https://github.com/localForage/localForage).
+[twitter-image]:https://img.shields.io/twitter/follow/CambridgeMVP.svg?style=social&label=Follow%20me
+[twitter-url]:https://twitter.com/CambridgeMVP
 
-Offline mode is detected when a request times out, or `navigator.onLine === true`.
+`offlineFetch` is a wrapper around the standard [window.fetch](https://davidwalsh.name/fetch) that adds offline support by caching requests in `sessionStorage`, `localStorage` or IndexedDB, WebSQL when used with [localForage](https://github.com/localForage/localForage).
+
+Offline mode is detected when `navigator.onLine === true` or a request times out.
 
 ```js
 var options = {
@@ -57,11 +61,11 @@ This script was heavily influenced by these two great posts:
 2. Create your feature branch: `git checkout -b my-new-feature`
 3. Commit your changes: `git commit -m 'Add some feature'`
 4. Push to the branch: `git push origin my-new-feature`
-5. Submit a pull request :)
+5. Submit a pull request
 
 ## History
 
-For detailed changelog, check [Releases](https://github.com/john-doherty/offline-fetch/releases).
+For change-log, check [releases](https://github.com/john-doherty/offline-fetch/releases).
 
 ## License
 
