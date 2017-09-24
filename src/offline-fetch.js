@@ -81,6 +81,13 @@
         // if cacheKeyGenerator provided, use that otherwise use the hash generated above
         var cacheKey = (typeof options.cacheKeyGenerator === 'function') ? options.cacheKeyGenerator(url, options, requestHash) : requestHash;
 
+        // remove null items from options (EDGE does not like them)
+        Object.keys(options || {}).forEach(function(key) {
+            if (options[key] === null) {
+                delete options[key];
+            }
+        });
+
         // execute cache gets with a promise, just incase we're using a promise storage
         return Promise.resolve(storage.getItem(cacheKey)).then(function (cachedItem) {
 
