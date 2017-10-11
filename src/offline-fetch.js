@@ -138,14 +138,16 @@
                         // This way we're being un-intrusive.
                         res.clone().text().then(function (content) {
 
-                            // store the content in cache as a JSON object
-                            storage.setItem(cacheKey, {
+                            var contentToStore = JSON.stringify({
                                 status: res.status,         // store the response status
                                 statusText: res.statusText, // the response status text
                                 contentType: contentType,   // the response content type
                                 content: content,           // the body of the response as a string
                                 storedAt: Date.now()        // store the date-time in milliseconds that the item was cached
                             });
+
+                            // store the content in cache as a JSON object
+                            storage.setItem(cacheKey, contentToStore);
                         });
                     }
                 }
