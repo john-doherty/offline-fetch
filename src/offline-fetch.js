@@ -79,7 +79,7 @@
         var requestHash = 'offline:' + stringToHash(method + '|' + url);
 
         // if cacheKeyGenerator provided, use that otherwise use the hash generated above
-        var cacheKey = (typeof options.cacheKeyGenerator === 'function') ? options.cacheKeyGenerator(url, options, requestHash) : requestHash;
+        var cacheKey = (typeof options.offline.cacheKeyGenerator === 'function') ? options.offline.cacheKeyGenerator(url, options, requestHash) : requestHash;
 
         // remove null items from options (EDGE does not like them)
         Object.keys(options || {}).forEach(function(key) {

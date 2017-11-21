@@ -1,6 +1,6 @@
 {
   "name": "offline-fetch",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Adds offline support to window.fetch by caching requests locally",
   "main": "dev-server.js",
   "scripts": {
