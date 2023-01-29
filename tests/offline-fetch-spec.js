@@ -3,7 +3,7 @@
 var offlineFetch = require('../src/offline-fetch.js');
 var fetch = require('fetch-reply-with');
 
-describe('window.offlineFetch', function () {
+describe('offlineFetch', function () {
 
     // check fake environment before each test as any test could wipeout a global as a negative test
     beforeEach(function() {
