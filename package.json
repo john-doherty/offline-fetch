@@ -5,7 +5,7 @@
   "main": "dev-server.js",
   "scripts": {
     "start": "node server/dev-server.js",
-    "test": "jasmine-node tests --verbose --color --forceexit --junitreport || true",
+    "test": "NODE_ENV=test node_modules/.bin/jasmine tests/**/*-spec.js --reporter=jasmine-console-reporter",
     "build": "node_modules/gulp/bin/gulp.js build",
     "clean": "node_modules/gulp/bin/gulp.js clean"
   },

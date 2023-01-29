@@ -1,6 +1,4 @@
-'use strict';
-
-var offlineFetch = require('../src/offline-fetch.js');
+var offlineFetch = require('../src/offline-fetch');
 var fetch = require('fetch-reply-with');
 
 describe('offlineFetch', function () {
@@ -18,10 +16,10 @@ describe('offlineFetch', function () {
         global.navigator = { onLine: true };
 
         // spy on storage function so we can verify responses are cached
-        spyOn(window.sessionStorage, 'getItem').andCallThrough();
-        spyOn(window.sessionStorage, 'setItem').andCallThrough();
-        spyOn(window.localStorage, 'getItem').andCallThrough();
-        spyOn(window.localStorage, 'setItem').andCallThrough();
+        spyOn(window.sessionStorage, 'getItem').and.callThrough();
+        spyOn(window.sessionStorage, 'setItem').and.callThrough();
+        spyOn(window.localStorage, 'getItem').and.callThrough();
+        spyOn(window.localStorage, 'setItem').and.callThrough();
 
         expect(window).toBeDefined();
         expect(navigator).toBeDefined();
@@ -88,7 +86,7 @@ describe('offlineFetch', function () {
             expect(res).toBeDefined();
             expect(res.status).toEqual(status);
             expect(window.sessionStorage.setItem).toHaveBeenCalled();
-            expect(window.sessionStorage.setItem.calls.length).toEqual(1);
+            expect(window.sessionStorage.setItem.calls.count()).toEqual(1);
             return res.text();
         })
         .then(function(text) {
@@ -125,7 +123,7 @@ describe('offlineFetch', function () {
             expect(res).toBeDefined();
             expect(res.status).toEqual(status);
             expect(window.localStorage.setItem).toHaveBeenCalled();
-            expect(window.localStorage.setItem.calls.length).toEqual(1);
+            expect(window.localStorage.setItem.calls.count()).toEqual(1);
             return res.text();
         })
         .then(function(text) {
@@ -163,7 +161,7 @@ describe('offlineFetch', function () {
             expect(res).toBeDefined();
             expect(res.status).toEqual(status);
             expect(window.sessionStorage.getItem).toHaveBeenCalled();
-            expect(window.sessionStorage.getItem.calls.length).toEqual(1);
+            expect(window.sessionStorage.getItem.calls.count()).toEqual(1);
             return res.text();
         })
         .then(function(text) {
@@ -217,9 +215,6 @@ function storageMock() {
         },
         removeItem: function(key) {
             delete storage[key];
-        },
-        get length() {
-            return Object.keys(storage).length;
         },
         key: function(i) {
             var keys = Object.keys(storage);
