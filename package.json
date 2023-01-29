@@ -5,7 +5,7 @@
   "main": "dev-server.js",
   "scripts": {
     "start": "node server/dev-server.js",
-    "test": "jasmine-node tests --verbose --color --forceexit --junitreport || true",
+    "test": "NODE_ENV=test node_modules/.bin/jasmine tests/**/*-spec.js --reporter=jasmine-console-reporter",
     "build": "node_modules/gulp/bin/gulp.js build",
     "clean": "node_modules/gulp/bin/gulp.js clean"
   },
@@ -21,8 +21,11 @@
     "gulp-rename": "1.2.2",
     "gulp-sizereport": "^1.2.0",
     "gulp-string-replace": "^0.4.0",
-    "jasmine-node": "1.14.5",
-    "run-sequence": "1.2.2"
+    "run-sequence": "1.2.2",
+    "jasmine": "^3.7.0",
+    "jasmine-console-reporter": "^3.1.0",
+    "jasmine-xml-reporter": "^1.2.1",
+    "fetch-reply-with": "^1.2.3"
   },
   "eslintConfig": {
     "extends": "airbnb-base",
@@ -139,8 +142,5 @@
         "error"
       ]
     }
-  },
-  "dependencies": {
-    "fetch-reply-with": "^1.2.3"
   }
 }

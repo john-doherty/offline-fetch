@@ -1,0 +1,53 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Dev",
+            "program": "${workspaceRoot}/index.js",
+            "cwd": "${workspaceRoot}",
+            "env": {
+                "NODE_ENV": "development"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Prod",
+            "program": "${workspaceRoot}/index.js",
+            "cwd": "${workspaceRoot}",
+            "env": {
+                "NODE_ENV": "production"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Jasmine Current File",
+            "program": "${workspaceFolder}/node_modules/.bin/jasmine",
+            "args": [
+                "${file}",
+                "--fail-fast=false"
+            ],
+            "env": {
+                "NODE_ENV": "test"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Jasmine all",
+            "program": "${workspaceFolder}/node_modules/.bin/jasmine",
+            "args": [
+                "tests/*spec.js"
+            ],
+            "env": {
+                "NODE_ENV": "test"
+            }
+        }
+    ]
+}

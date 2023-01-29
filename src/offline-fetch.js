@@ -73,7 +73,7 @@
         var method = options.method || 'GET';
 
         // detect offline if supported (if true, browser supports the property & client is offline)
-        var isOffline = (navigator.onLine === false);
+        var isOffline = (navigator && navigator.onLine === false);
 
         // a hash of the method + url, used as default cache key if no generator passed
         var requestHash = 'offline:' + stringToHash(method + '|' + url);
