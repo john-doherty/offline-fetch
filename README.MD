@@ -7,7 +7,7 @@ Isomorphic _(browser and node)_ JavaScript library that adds offline support to 
 * `sessionStorage`
 * `localStorage`
 * IndexedDB & WebSQL when used with [localForage](https://github.com/localForage/localForage)
-* Nose support when using [node-localstorage](https://www.npmjs.com/package/node-localstorage)
+* Disk when used with [node-localstorage](https://www.npmjs.com/package/node-localstorage)
 
 Offline is detected when a request times out or `navigator.onLine === false`. `offlineFetch` is a wrapper around `fetch` so it can be used as a drop in replacement. Requests are only cached if an `offline` option is provided.
 
