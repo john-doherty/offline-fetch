@@ -6,13 +6,31 @@
 
 Offline mode is detected when `navigator.onLine === true` or a request times out.
 
-## Usage
+## Installation
 
-Copy [offline-fetch.min.js](dist/offline-fetch.min.js) into your application:
+### Client-side
+
+Copy [offline-fetch.min.js](dist/offline-fetch.min.js) into your page and add a script tag:
 
 ```html
-<script src="js/offline-fetch.min.js"></script>
+<script src="path-to/offline-fetch.min.js"></script>
 ```
+
+### Server-side
+
+Install via npm:
+
+```bash
+npm install offline-fetch
+```
+
+Require in your module:
+
+```js
+var offlineFetch = require('offline-fetch');
+```
+
+## Usage
 
 Replace `fetch` calls with `offlineFetch` and pass in additional parameter:
 
