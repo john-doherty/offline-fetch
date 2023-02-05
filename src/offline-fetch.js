@@ -45,7 +45,7 @@
 
         if (!url || url === '') return Promise.reject(new Error('Please provide a URL'));
         if (options !== undefined && typeof options !== 'object') return Promise.reject(new Error('If defined, options must be of type object'));
-        if (!fetch) return Promise.reject(new Error('fetch not supported, are you missing the window.fetch polyfill?'));
+        if (!fetch) return Promise.reject(new Error('fetch not supported, are you missing the fetch polyfill?'));
 
         // offline not requested, execute a regular fetch
         if (!options || !options.offline) return fetch(url, options);

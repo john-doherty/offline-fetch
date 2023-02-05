@@ -43,7 +43,7 @@ describe('offlineFetch', function () {
         });
     });
 
-    it('should throw an error if window.fetch is not supported', function(done) {
+    it('should throw an error if fetch is not supported', function(done) {
 
         // save the global fetch
         var tempFetch = global.fetch;
@@ -53,7 +53,7 @@ describe('offlineFetch', function () {
 
         offlineFetch('http://www.orcascan.com').catch(function(err) {
 
-            expect(err.message).toEqual('fetch not supported, are you missing the window.fetch polyfill?');
+            expect(err.message).toEqual('fetch not supported, are you missing the fetch polyfill?');
 
             // restore global fetch to allow other tests to run
             global.fetch = tempFetch;
