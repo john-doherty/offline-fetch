@@ -2,9 +2,9 @@
 
 [![Tests](https://github.com/john-doherty/offline-fetch/actions/workflows/ci.yml/badge.svg)](https://github.com/john-doherty/offline-fetch/actions/workflows/ci.yml)
 
-`offlineFetch` is a wrapper around the standard [window.fetch](https://davidwalsh.name/fetch) that adds offline support by caching requests in `sessionStorage`, `localStorage` or IndexedDB, WebSQL when used with [localForage](https://github.com/localForage/localForage).
+`offlineFetch` is a wrapper around the [fetch](https://davidwalsh.name/fetch) that adds offline support by caching requests in `sessionStorage`, `localStorage` or IndexedDB, WebSQL when used with [localForage](https://github.com/localForage/localForage).
 
-Offline mode is detected when `navigator.onLine === true` or a request times out.
+Offline mode is detected when a request times out or `navigator.onLine === false`.
 
 ## Installation
 
