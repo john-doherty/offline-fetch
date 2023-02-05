@@ -1,6 +1,6 @@
 /*!
  * offline-fetch - v@version@
- * Adds offline support to window.fetch
+ * Adds offline support to fetch
  * https://github.com/john-doherty/offline-fetch
  * @author John Doherty <www.johndoherty.info>
  * @license MIT
@@ -9,8 +9,13 @@
 
     'use strict';
 
+    // Establish the root object, `window` in the browser, or `global` on the server.
+    var root = typeof self === 'object' && self.Object === Object && self;
+
+    root = root || (typeof global === 'object' && global.Object === Object && global);
+
     /**
-     * Adds offline support to window.fetch - returning previous responses when offline, offline is detected when navigator.onLine = false or a request times-out
+     * Adds offline support to fetch - returning previous responses when offline, offline is detected when a request times-out  or navigator.onLine = false
      * @param {string} url - URL to request
      * @param {object} options - fetch options with additional .offline property
      * @example
@@ -49,7 +54,7 @@
         var offlineOptions = (typeof options.offline !== 'object') ? {} : options.offline;
 
         // storage type, default sessionStorage (supports any storage matching localStorage API)
-        var storage = window[offlineOptions.storage || 'sessionStorage'];
+        var storage = root[offlineOptions.storage || 'sessionStorage'];
 
         // request timeout in milliseconds, defaults to 30 seconds
         var timeout = parseInt(offlineOptions.timeout || '10000', 10);

@@ -7,21 +7,18 @@ describe('offlineFetch', function () {
     beforeEach(function() {
 
         // create fake storage objects we can spy on
-        global.window = {
-            sessionStorage: storageMock(),
-            localStorage: storageMock()
-        };
+        global.sessionStorage = storageMock();
+        global.localStorage = storageMock();
 
         // create a fake navigator to be consumed within offlineFetch
         global.navigator = { onLine: true };
 
         // spy on storage function so we can verify responses are cached
-        spyOn(window.sessionStorage, 'getItem').and.callThrough();
-        spyOn(window.sessionStorage, 'setItem').and.callThrough();
-        spyOn(window.localStorage, 'getItem').and.callThrough();
-        spyOn(window.localStorage, 'setItem').and.callThrough();
+        spyOn(sessionStorage, 'getItem').and.callThrough();
+        spyOn(sessionStorage, 'setItem').and.callThrough();
+        spyOn(localStorage, 'getItem').and.callThrough();
+        spyOn(localStorage, 'setItem').and.callThrough();
 
-        expect(window).toBeDefined();
         expect(navigator).toBeDefined();
         expect(navigator.onLine).toEqual(true);
     });
@@ -85,8 +82,8 @@ describe('offlineFetch', function () {
         offlineFetch(url, { offline: true }).then(function(res) {
             expect(res).toBeDefined();
             expect(res.status).toEqual(status);
-            expect(window.sessionStorage.setItem).toHaveBeenCalled();
-            expect(window.sessionStorage.setItem.calls.count()).toEqual(1);
+            expect(sessionStorage.setItem).toHaveBeenCalled();
+            expect(sessionStorage.setItem.calls.count()).toEqual(1);
             return res.text();
         })
         .then(function(text) {
@@ -122,8 +119,8 @@ describe('offlineFetch', function () {
         .then(function(res) {
             expect(res).toBeDefined();
             expect(res.status).toEqual(status);
-            expect(window.localStorage.setItem).toHaveBeenCalled();
-            expect(window.localStorage.setItem.calls.count()).toEqual(1);
+            expect(localStorage.setItem).toHaveBeenCalled();
+            expect(localStorage.setItem.calls.count()).toEqual(1);
             return res.text();
         })
         .then(function(text) {
@@ -151,7 +148,7 @@ describe('offlineFetch', function () {
         });
 
         // set offline
-        navigator.onLine = false;
+        global.navigator.onLine = false;
 
         // issue request and confirm it has been intercepted
         offlineFetch(url, {
@@ -160,8 +157,8 @@ describe('offlineFetch', function () {
         .then(function(res) {
             expect(res).toBeDefined();
             expect(res.status).toEqual(status);
-            expect(window.sessionStorage.getItem).toHaveBeenCalled();
-            expect(window.sessionStorage.getItem.calls.count()).toEqual(1);
+            expect(sessionStorage.getItem).toHaveBeenCalled();
+            expect(sessionStorage.getItem.calls.count()).toEqual(1);
             return res.text();
         })
         .then(function(text) {
