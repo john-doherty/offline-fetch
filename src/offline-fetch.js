@@ -78,7 +78,7 @@
         var method = options.method || 'GET';
 
         // detect offline if supported (if true, browser supports the property & client is offline)
-        var isOffline = (navigator && navigator.onLine === false);
+        var isOffline = (root.navigator && root.navigator.onLine === false);
 
         // a hash of the method + url, used as default cache key if no generator passed
         var requestHash = 'offline-fetch-' + stringToHash(method + '|' + url);
@@ -94,7 +94,17 @@
         });
 
         // execute cache gets with a promise, just incase we're using a promise storage
-        return Promise.resolve(storage.getItem(cacheKey)).then(function (cachedItem) {
+        return new Promise(function(resolve, reject) {
+            try {
+                resolve(storage.getItem(cacheKey));
+            }
+            catch(err) {
+                // node-localstorage returns errors if file does not exist
+                // catch this and return null to next step (cache hit)
+                resolve(null);
+            }
+        })
+        .then(function (cachedItem) {
 
             // convert to JSON object if it's not already
             cachedItem = (typeof cachedItem === 'string') ? JSON.parse(cachedItem) : cachedItem;
