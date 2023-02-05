@@ -32,6 +32,9 @@ npm install offline-fetch
 Require in your module:
 
 ```js
+// make `fetch` avaliable globally
+require('isomorphic-fetch');
+
 var offlineFetch = require('offline-fetch');
 
 // require node replacement for localStorage
