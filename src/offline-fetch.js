@@ -81,7 +81,7 @@
         var isOffline = (navigator && navigator.onLine === false);
 
         // a hash of the method + url, used as default cache key if no generator passed
-        var requestHash = 'offline:' + stringToHash(method + '|' + url);
+        var requestHash = 'offline-fetch-' + stringToHash(method + '|' + url);
 
         // if cacheKeyGenerator provided, use that otherwise use the hash generated above
         var cacheKey = (typeof options.offline.cacheKeyGenerator === 'function') ? options.offline.cacheKeyGenerator(url, options, requestHash) : requestHash;
@@ -144,6 +144,7 @@
                         res.clone().text().then(function (content) {
 
                             var contentToStore = JSON.stringify({
+                                url: url,
                                 status: res.status,         // store the response status
                                 statusText: res.statusText, // the response status text
                                 contentType: contentType,   // the response content type
