@@ -2,9 +2,14 @@
 
 [![Tests](https://github.com/john-doherty/offline-fetch/actions/workflows/ci.yml/badge.svg)](https://github.com/john-doherty/offline-fetch/actions/workflows/ci.yml)
 
-`offlineFetch` is a wrapper around the [fetch](https://davidwalsh.name/fetch) that adds offline support by caching requests in `sessionStorage`, `localStorage` or IndexedDB, WebSQL when used with [localForage](https://github.com/localForage/localForage).
+Isomorphic _(browser and node)_ JavaScript library that adds offline support to [fetch](https://davidwalsh.name/fetch) by caching requests in:
 
-Offline mode is detected when a request times out or `navigator.onLine === false`.
+* `sessionStorage`
+* `localStorage`
+* IndexedDB & WebSQL when used with [localForage](https://github.com/localForage/localForage)
+* Nose support when using [node-localstorage](https://www.npmjs.com/package/node-localstorage)
+
+Offline is detected when a request times out or `navigator.onLine === false`. `offlineFetch` is a wrapper around `fetch` so it can be used as a drop in replacement. Requests are only cached if an `offline` option is provided.
 
 ## Installation
 
@@ -28,11 +33,17 @@ Require in your module:
 
 ```js
 var offlineFetch = require('offline-fetch');
+
+// require node replacement for localStorage
+var { LocalStorage } = require('node-localstorage');
+
+// add instance to global namespace
+global.localStorage = new LocalStorage('./local-storage');
 ```
 
 ## Usage
 
-Replace `fetch` calls with `offlineFetch` and pass in additional parameter:
+Replace `fetch` with `offlineFetch` and pass in additional parameter:
 
 ```js
 var options = {
@@ -65,12 +76,6 @@ offlineFetch('http://www.orcascan.com/', options).then(function(data){
 ```
 
 _Supports any global `localStorage`-like API, including promised based `getItem`, `setItem`._
-
-## Credit where it's due
-
-This script was heavily influenced by these two great posts:
- * [Cache Fetched AJAX Requests Locally: Wrapping the Fetch API](https://www.sitepoint.com/cache-fetched-ajax-requests/)
- * [Working Off the Grid with HTML5 Offline](https://www.html5rocks.com/en/mobile/workingoffthegrid/)
 
 ## Unit Tests
 
