@@ -1,15 +1,16 @@
 var offlineFetch = require('../src/offline-fetch');
 var fetch = require('fetch-reply-with');
 var cuid = require('cuid');
+var helpers = require('./helpers');
 
-describe('offlineFetch (general)', function () {
+describe('offlineFetch (browser)', function () {
 
     // check fake environment before each test as any test could wipeout a global as a negative test
     beforeEach(function() {
 
         // create fake storage objects we can spy on
-        global.sessionStorage = storageMock();
-        global.localStorage = storageMock();
+        global.sessionStorage = helpers.storageMock();
+        global.localStorage = helpers.storageMock();
 
         // create a fake navigator to be consumed within offlineFetch
         global.navigator = { onLine: true };
@@ -24,48 +25,10 @@ describe('offlineFetch (general)', function () {
         expect(navigator.onLine).toEqual(true);
     });
 
-    it('should be defined', function() {
-        expect(offlineFetch).toBeDefined();
-    });
-
-    it('should throw an error if no URL param provided', function(done) {
-
-        offlineFetch().catch(function(err) {
-            expect(err.message).toEqual('Please provide a URL');
-            done();
-        });
-    });
-
-    it('should throw an error if options is not undefined or an object', function(done) {
-
-        offlineFetch('http://www.orcascan.com', false).catch(function(err) {
-            expect(err.message).toEqual('If defined, options must be of type object');
-            done();
-        });
-    });
-
-    it('should throw an error if fetch is not supported', function(done) {
-
-        // save the global fetch
-        var tempFetch = global.fetch;
-
-        // wipe it out so we can trigger the not support error
-        global.fetch = null;
-
-        offlineFetch('http://www.orcascan.com').catch(function(err) {
-
-            expect(err.message).toEqual('fetch not supported, are you missing the fetch polyfill?');
-
-            // restore global fetch to allow other tests to run
-            global.fetch = tempFetch;
-            done();
-        });
-    });
-
     it('should save response to sessionStorage by default', function(done) {
 
         var url = `http://www.${cuid.slug()}.com`;
-        var status = randomIntBetween(200, 299);
+        var status = helpers.randomIntBetween(200, 299);
         var body = 'Great Barcode App!';
 
         // setup intercept
@@ -97,7 +60,7 @@ describe('offlineFetch (general)', function () {
 
         var now = (new Date()).getTime();
         var url = `http://www.${cuid.slug()}.com`;
-        var status = randomIntBetween(200, 299);
+        var status = helpers.randomIntBetween(200, 299);
         var body = String(now * 100);
 
         // setup intercept
@@ -134,7 +97,7 @@ describe('offlineFetch (general)', function () {
 
         var now = (new Date()).getTime();
         var url = 'http://www.' + now + '.com';
-        var status = randomIntBetween(200, 299);
+        var status = helpers.randomIntBetween(200, 299);
         var body = String(now * 100);
 
         // setup intercept
@@ -176,43 +139,3 @@ describe('offlineFetch (general)', function () {
     // it('should not execute request if expires is set and not expired')
     // it('should always return live content if expired not set')
 });
-
-/* --- HELPERS --- */
-
-/**
- * Returns a random number between two numbers
- * @param {integer} min - minimum number
- * @param {integer} max - maximum number
- * @returns {integer} number between min and max
- */
-function randomIntBetween(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-/**
- * Creates a simple storage object mimicking the localStorage API
- * @returns {object} localStorage mock object
- */
-function storageMock() {
-
-    var storage = {};
-
-    return {
-        setItem: function(key, value) {
-            storage[key] = value || '';
-        },
-        getItem: function(key) {
-            return key in storage ? storage[key] : null;
-        },
-        removeItem: function(key) {
-            delete storage[key];
-        },
-        key: function(i) {
-            var keys = Object.keys(storage);
-            return keys[i] || null;
-        },
-        keys: function() {
-            return Object.keys(storage);
-        }
-    };
-}

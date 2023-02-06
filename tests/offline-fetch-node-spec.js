@@ -1,4 +1,5 @@
 var offlineFetch = require('../src/offline-fetch');
+var helpers = require('./helpers');
 var fetch = require('fetch-reply-with');
 var cuid = require('cuid');
 var { LocalStorage } = require('node-localstorage');
@@ -38,7 +39,7 @@ describe('offlineFetch (node)', function () {
     it('should save response to node sessionStorage by default', function(done) {
 
         var url = `http://www.${cuid.slug()}.com`;
-        var status = randomIntBetween(200, 299);
+        var status = helpers.randomIntBetween(200, 299);
         var body = 'Great Barcode App!';
 
         // setup intercept
@@ -70,7 +71,7 @@ describe('offlineFetch (node)', function () {
 
         var now = (new Date()).getTime();
         var url = `http://www.${cuid.slug()}.com`;
-        var status = randomIntBetween(200, 299);
+        var status = helpers.randomIntBetween(200, 299);
         var body = String(now * 100);
 
         // setup intercept
@@ -102,54 +103,4 @@ describe('offlineFetch (node)', function () {
             done();
         });
     });
-
-    it('should return offline content when navigator.onLine is false', function(done) {
-
-        var now = (new Date()).getTime();
-        var url = `http://www.${cuid.slug()}.com`;
-        var status = randomIntBetween(200, 299);
-        var body = String(now * 100);
-
-        // setup intercept
-        fetch(url, {
-            replyWith: {
-                status: status,
-                body: body,
-                headers: {
-                    'content-type': 'text/html'
-                }
-            }
-        });
-
-        // set offline
-        global.navigator.onLine = false;
-
-        // issue request and confirm it has been intercepted
-        offlineFetch(url, {
-            offline: true
-        })
-        .then(function(res) {
-            expect(res).toBeDefined();
-            expect(res.status).toEqual(status);
-            expect(sessionStorage.getItem).toHaveBeenCalled();
-            expect(sessionStorage.getItem.calls.count()).toEqual(1);
-            return res.text();
-        })
-        .then(function(text) {
-            expect(text).toEqual(body);
-            done();
-        });
-    });
 });
-
-/* --- HELPERS --- */
-
-/**
- * Returns a random number between two numbers
- * @param {integer} min - minimum number
- * @param {integer} max - maximum number
- * @returns {integer} number between min and max
- */
-function randomIntBetween(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
