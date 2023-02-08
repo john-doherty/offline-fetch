@@ -48,6 +48,7 @@ describe('offlineFetch (browser)', function () {
             expect(res.status).toEqual(status);
             expect(sessionStorage.setItem).toHaveBeenCalled();
             expect(sessionStorage.setItem.calls.count()).toEqual(1);
+            expect(res.headers.get('x-offline-cache')).toEqual('MISS');
             return res.text();
         })
         .then(function(text) {

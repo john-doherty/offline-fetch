@@ -2,7 +2,7 @@ var offlineFetch = require('../src/offline-fetch');
 var helpers = require('./helpers');
 var cuid = require('cuid');
 
-describe('offlineFetch (interface)', function () {
+describe('offlineFetch (common)', function () {
 
     // check fake environment before each test as any test could wipeout a global as a negative test
     beforeEach(function() {
@@ -28,23 +28,21 @@ describe('offlineFetch (interface)', function () {
         expect(offlineFetch).toBeDefined();
     });
 
-    it('should throw an error if no URL param provided', function(done) {
+    it('should throw an error if no URL param provided', function() {
 
-        offlineFetch().catch(function(err) {
+        return offlineFetch().catch(function(err) {
             expect(err.message).toEqual('Please provide a URL');
-            done();
         });
     });
 
-    it('should throw an error if options is not undefined or an object', function(done) {
+    it('should throw an error if options is not undefined or an object', function() {
 
-        offlineFetch('http://www.orcascan.com', false).catch(function(err) {
+        return offlineFetch('http://www.orcascan.com', false).catch(function(err) {
             expect(err.message).toEqual('If defined, options must be of type object');
-            done();
         });
     });
 
-    it('should throw an error if fetch is not supported', function(done) {
+    it('should throw an error if fetch is not supported', function() {
 
         // save the global fetch
         var tempFetch = global.fetch;
@@ -52,13 +50,12 @@ describe('offlineFetch (interface)', function () {
         // wipe it out so we can trigger the not support error
         global.fetch = null;
 
-        offlineFetch('http://www.orcascan.com').catch(function(err) {
+        return offlineFetch('http://www.orcascan.com').catch(function(err) {
 
             expect(err.message).toEqual('fetch not supported, are you missing the fetch polyfill?');
 
             // restore global fetch to allow other tests to run
             global.fetch = tempFetch;
-            done();
         });
     });
 });
