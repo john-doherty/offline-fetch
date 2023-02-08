@@ -1,4 +1,5 @@
 var offlineFetch = require('../src/offline-fetch');
+var fetch = require('fetch-reply-with');
 var helpers = require('./helpers');
 var cuid = require('cuid');
 
@@ -56,6 +57,34 @@ describe('offlineFetch (common)', function () {
 
             // restore global fetch to allow other tests to run
             global.fetch = tempFetch;
+        });
+    });
+
+    it('should include x-offline-cache header', function(done) {
+
+        var url = `http://www.${cuid.slug()}.com`;
+        var status = helpers.randomIntBetween(200, 299);
+        var body = 'Great Barcode App!';
+
+        // setup intercept
+        fetch(url, {
+            replyWith: {
+                status: status,
+                body: body,
+                headers: {
+                    'content-type': 'text/html'
+                }
+            }
+        });
+
+        // issue request and conform it has been intercepted
+        offlineFetch(url, { offline: true }).then(function(res) {
+            expect(res.headers.get('x-offline-cache')).toEqual('MISS');
+            return res.text();
+        })
+        .then(function(text) {
+            expect(text).toEqual(body);
+            done();
         });
     });
 });
