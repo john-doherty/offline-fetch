@@ -94,11 +94,11 @@
         });
 
         // execute cache gets with a promise, just incase we're using a promise storage
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
             try {
                 resolve(storage.getItem(cacheKey));
             }
-            catch(err) {
+            catch (err) {
                 // node-localstorage returns errors if file does not exist
                 // catch this and return null to next step (cache hit)
                 resolve(null);
@@ -118,7 +118,8 @@
                     status: cachedItem.status,
                     statusText: cachedItem.statusText,
                     headers: {
-                        'Content-Type': cachedItem.contentType
+                        'Content-Type': cachedItem.contentType,
+                        'x-offline-cache': 'HIT'
                     }
                 });
             }
@@ -169,6 +170,9 @@
                 }
 
                 if (debug) log('offlineFetch[live]: ' + url);
+
+                // add cache MISS header
+                res.headers.append('x-offline-cache', 'MISS');
 
                 return res;
             })
