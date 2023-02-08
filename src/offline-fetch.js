@@ -1,3 +1,4 @@
+
 /*!
  * offline-fetch - v@version@
  * Adds offline support to fetch
@@ -9,10 +10,11 @@
 
     'use strict';
 
-    // Establish the root object, `window` in the browser, or `global` on the server.
-    var root = typeof self === 'object' && self.Object === Object && self;
-
-    root = root || (typeof global === 'object' && global.Object === Object && global);
+    // Establish the root object, `window` (`self`) in the browser, `global`
+    // on the server, or `this` in some virtual machines. We use `self`
+    // instead of `window` for `WebWorker` support.
+    // eslint-disable-next-line no-mixed-operators
+    var root = (typeof self === 'object' && self.self === self && self) || (typeof global === 'object' && global.global === global && global) || this;
 
     /**
      * Adds offline support to fetch - returning previous responses when offline, offline is detected when a request times-out  or navigator.onLine = false
