@@ -87,4 +87,79 @@ describe('offlineFetch (common)', function () {
             done();
         });
     });
+
+    it('should return cached response if error is "Failed to fetch"', function(done) {
+        spyOn(global, 'fetch').and.returnValue(Promise.reject(new Error('Failed to fetch')));
+        var url = `http://www.${cuid.slug()}.com`;
+        var status = 200;
+        var body = 'Cached Content!';
+        // Simulate cached item
+        var cachedItem = JSON.stringify({
+            url: url,
+            status: status,
+            statusText: 'OK',
+            contentType: 'text/html',
+            content: body,
+            storedAt: Date.now()
+        });
+        sessionStorage.getItem.and.returnValue(cachedItem);
+        offlineFetch(url, { offline: { renew: true } }).then(function(res) {
+            expect(res).toBeDefined();
+            expect(res.status).toEqual(status);
+            return res.text();
+        }).then(function(text) {
+            expect(text).toEqual(body);
+            done();
+        }).catch(done);
+    });
+
+    it('should return cached response if error is "Network request failed"', function(done) {
+        spyOn(global, 'fetch').and.returnValue(Promise.reject(new Error('Network request failed')));
+        var url = `http://www.${cuid.slug()}.com`;
+        var status = 200;
+        var body = 'Cached Content!';
+        // Simulate cached item
+        var cachedItem = JSON.stringify({
+            url: url,
+            status: status,
+            statusText: 'OK',
+            contentType: 'text/html',
+            content: body,
+            storedAt: Date.now()
+        });
+        sessionStorage.getItem.and.returnValue(cachedItem);
+        offlineFetch(url, { offline: { renew: true } }).then(function(res) {
+            expect(res).toBeDefined();
+            expect(res.status).toEqual(status);
+            return res.text();
+        }).then(function(text) {
+            expect(text).toEqual(body);
+            done();
+        }).catch(done);
+    });
+
+    it('should return cached response if error is "Promise Timed Out"', function(done) {
+        spyOn(global, 'fetch').and.returnValue(Promise.reject(new Error('Promise Timed Out')));
+        var url = `http://www.${cuid.slug()}.com`;
+        var status = 200;
+        var body = 'Cached Content!';
+        // Simulate cached item
+        var cachedItem = JSON.stringify({
+            url: url,
+            status: status,
+            statusText: 'OK',
+            contentType: 'text/html',
+            content: body,
+            storedAt: Date.now()
+        });
+        sessionStorage.getItem.and.returnValue(cachedItem);
+        offlineFetch(url, { offline: { renew: true } }).then(function(res) {
+            expect(res).toBeDefined();
+            expect(res.status).toEqual(status);
+            return res.text();
+        }).then(function(text) {
+            expect(text).toEqual(body);
+            done();
+        }).catch(done);
+    });
 });
