@@ -173,8 +173,13 @@
 
                 if (debug) log('offlineFetch[live]: ' + url);
 
-                // add cache MISS header
-                res.headers.append('x-offline-cache', 'MISS');
+                try {
+                    // add cache MISS header
+                    res.headers.append('x-offline-cache', 'MISS');
+                }
+                catch {
+                    // headerd are likely locked, ignore.
+                }
 
                 return res;
             })
