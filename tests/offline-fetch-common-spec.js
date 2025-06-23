@@ -93,7 +93,6 @@ describe('offlineFetch (common)', function () {
         var url = `http://www.${cuid.slug()}.com`;
         var status = 200;
         var body = 'Cached Content!';
-        var cacheKey = 'offline-fetch-123';
         // Simulate cached item
         var cachedItem = JSON.stringify({
             url: url,
@@ -119,7 +118,6 @@ describe('offlineFetch (common)', function () {
         var url = `http://www.${cuid.slug()}.com`;
         var status = 200;
         var body = 'Cached Content!';
-        var cacheKey = 'offline-fetch-123';
         // Simulate cached item
         var cachedItem = JSON.stringify({
             url: url,
@@ -145,7 +143,6 @@ describe('offlineFetch (common)', function () {
         var url = `http://www.${cuid.slug()}.com`;
         var status = 200;
         var body = 'Cached Content!';
-        var cacheKey = 'offline-fetch-123';
         // Simulate cached item
         var cachedItem = JSON.stringify({
             url: url,
