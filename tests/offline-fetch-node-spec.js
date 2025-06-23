@@ -57,13 +57,15 @@ describe('offlineFetch (node)', function () {
         offlineFetch(url, { offline: true }).then(function(res) {
             expect(res).toBeDefined();
             expect(res.status).toEqual(status);
-            expect(sessionStorage.setItem).toHaveBeenCalled();
-            expect(sessionStorage.setItem.calls.count()).toEqual(1);
             return res.text();
         })
         .then(function(text) {
             expect(text).toEqual(body);
-            done();
+            setTimeout(function() {
+                expect(sessionStorage.setItem).toHaveBeenCalled();
+                expect(sessionStorage.setItem.calls.count()).toEqual(1);
+                done();
+            }, 10);
         });
     });
 
@@ -94,13 +96,15 @@ describe('offlineFetch (node)', function () {
         .then(function(res) {
             expect(res).toBeDefined();
             expect(res.status).toEqual(status);
-            expect(localStorage.setItem).toHaveBeenCalled();
-            expect(localStorage.setItem.calls.count()).toEqual(1);
             return res.text();
         })
         .then(function(text) {
             expect(text).toEqual(body);
-            done();
+            setTimeout(function() {
+                expect(localStorage.setItem).toHaveBeenCalled();
+                expect(localStorage.setItem.calls.count()).toEqual(1);
+                done();
+            }, 10);
         });
     });
 });
