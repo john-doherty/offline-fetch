@@ -182,11 +182,15 @@
 
                 var errorMessage = error.message || '';
                 var timedout = (errorMessage) === 'Promise Timed Out';
+                var failedToFetch = (errorMessage) === 'Failed to fetch';
+                var networkFailed = (errorMessage) === 'Network request failed';
 
-                // if its a timeout and we have a cached response, return it
-                if (timedout && cachedResponse) {
+                // if its a timeout, failed to fetch or network failed and we have a cached response, return it
+                if ((timedout || failedToFetch || networkFailed) && cachedResponse) {
 
-                    if (debug) log('offlineFetch[cache] (timedout): ' + url);
+                    if (debug && timedout) log('offlineFetch[cache] (timedout): ' + url);
+                    if (debug && failedToFetch) log('offlineFetch[cache] (failed to fetch): ' + url);
+                    if (debug && networkFailed) log('offlineFetch[cache] (network failed): ' + url);
 
                     return Promise.resolve(cachedResponse);
                 }
