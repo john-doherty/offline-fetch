@@ -105,7 +105,7 @@ describe('offlineFetch (common)', function () {
             }
         });
 
-        // issue request and conform it has been intercepted
+        // issue request and confirm it has been intercepted
         offlineFetch(url, { offline: true }).then(function(res) {
             expect(res.headers.get('x-offline-stored-at')).toBeDefined();
             return res.text();
