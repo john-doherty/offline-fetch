@@ -15,7 +15,8 @@ Few things to note:
 * You have to issue a request with `offline` option present to utalise cached copy
 * HTTP header `x-offline-cache` will exist request handled by offline-fetch
 * `x-offline-cache` = `MISS` will exist if cache not used
-* `x-offline-cache` = `HIT` if serverd from offline cache
+* `x-offline-cache` = `HIT` if served from offline cache
+* HTTP header `x-offline-stored-at` will return time the last cached response was stored
 
 ## Installation
 

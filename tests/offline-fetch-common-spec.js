@@ -88,6 +88,34 @@ describe('offlineFetch (common)', function () {
         });
     });
 
+    it('should include x-offline-stored-at header', function(done) {
+
+        var url = `http://www.${cuid.slug()}.com`;
+        var status = helpers.randomIntBetween(200, 299);
+        var body = 'Great Barcode App!';
+
+        // setup intercept
+        fetch(url, {
+            replyWith: {
+                status: status,
+                body: body,
+                headers: {
+                    'content-type': 'text/html'
+                }
+            }
+        });
+
+        // issue request and conform it has been intercepted
+        offlineFetch(url, { offline: true }).then(function(res) {
+            expect(res.headers.get('x-offline-stored-at')).toBeDefined();
+            return res.text();
+        })
+        .then(function(text) {
+            expect(text).toEqual(body);
+            done();
+        });
+    });
+
     it('should return cached response if error is "Failed to fetch"', function(done) {
         spyOn(global, 'fetch').and.returnValue(Promise.reject(new Error('Failed to fetch')));
         var url = `http://www.${cuid.slug()}.com`;
