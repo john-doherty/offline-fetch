@@ -12,10 +12,11 @@ Isomorphic _(browser and node)_ JavaScript library that adds offline support to 
 Offline is detected when a request times out or `navigator.onLine === false`. `offlineFetch` is a wrapper around `fetch` so it can be used as a drop in replacement. Requests are only cached if an `offline` option is provided.
 
 Few things to note:
-* You have to issue a request with `offline` option present to utalise cached copy
+* You have to issue a request with `offline` option present to utilize cached copy
 * HTTP header `x-offline-cache` will exist request handled by offline-fetch
 * `x-offline-cache` = `MISS` will exist if cache not used
-* `x-offline-cache` = `HIT` if serverd from offline cache
+* `x-offline-cache` = `HIT` if served from offline cache
+* HTTP header `x-offline-stored-at` will return time the last cached response was stored
 
 ## Installation
 

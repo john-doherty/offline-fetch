@@ -116,12 +116,15 @@
 
             if (cachedItem) {
 
+                var cachedAt = cachedItem.storedAt ? new Date(cachedItem.storedAt).toISOString() : '';
+
                 cachedResponse = new Response(cachedItem.content, {
                     status: cachedItem.status,
                     statusText: cachedItem.statusText,
                     headers: {
                         'Content-Type': cachedItem.contentType,
-                        'x-offline-cache': 'HIT'
+                        'x-offline-cache': 'HIT',
+                        'x-offline-stored-at': cachedAt
                     }
                 });
             }
